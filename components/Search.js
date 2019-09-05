@@ -43,7 +43,7 @@ class Search extends React.Component {
 
 const styles = StyleSheet.create({
     main_container: {marginTop: 20, flex: 1},
-    textinput: {marginLeft: 5, marginRight: 5, height: 50, borderColor: '#ff764e', borderWidth: 2, paddingLeft: 5}
+    textinput: {marginLeft: 5, marginRight: 5, height: 50, borderColor: '#000000', borderWidth: 2, paddingLeft: 5}
 });
 
 export default Search
