@@ -12,8 +12,8 @@ class Search extends React.Component {
         this.totalPages = 0;
         this.searchText = ""
         this.state = {
-            films: [],
-            isLoading: false
+            films : [],
+            isLoading : false
         }
     }
 
@@ -22,7 +22,6 @@ class Search extends React.Component {
             return (
                 <View style={styles.loading_container}>
                     <ActivityIndicator size='large'/>
-                    {/* Le component ActivityIndicator possède une propriété size pour définir la taille du visuel de chargement : small ou large. Par défaut size vaut small, on met donc large pour que le chargement soit bien visible */}
                 </View>
             )
         }
@@ -42,10 +41,10 @@ class Search extends React.Component {
     }
 
     searchFilms () {
-        this.page=0
-        this.totalPages=0
+        this.page = 0
+        this.totalPages = 0
         this.setState({
-            films:[]
+            films : []
         }, () => this.loadFilm()
         )
     }
