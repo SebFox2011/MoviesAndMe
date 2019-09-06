@@ -8,18 +8,20 @@ import {ActivityIndicator} from "react-native";
 class Search extends React.Component {
     constructor(props) {
         super(props);
+        this.page = 0;
+        this.totalPages = 0;
+        this.searchText = ""
         this.state = {
             films: [],
             isLoading: false
         }
-        this.searchText = ""
     }
 
     displayLoading() {
         if (this.state.isLoading) {
             return (
                 <View style={styles.loading_container}>
-                    <ActivityIndicator size='large' />
+                    <ActivityIndicator size='large'/>
                     {/* Le component ActivityIndicator possède une propriété size pour définir la taille du visuel de chargement : small ou large. Par défaut size vaut small, on met donc large pour que le chargement soit bien visible */}
                 </View>
             )
@@ -29,11 +31,23 @@ class Search extends React.Component {
     loadFilm() {
         this.setState({isLoading: true})
         if (this.searchText.length > 0)
-            getFilmsfromApiWithSearchedText(this.searchText)
-                .then((data) => this.setState({
-                    films: data.results,
+            getFilmsfromApiWithSearchedText(this.searchText, this.page + 1).then((data) => {
+                this.page = data.page
+                this.totalPages = data.total_pages
+                this.setState({
+                    films: [...this.state.films, ...data.results],
                     isLoading: false
-                }));
+                })
+            });
+    }
+
+    searchFilms () {
+        this.page=0
+        this.totalPages=0
+        this.setState({
+            films:[]
+        }, () => this.loadFilm()
+        )
     }
 
     searchTextInputChange(text) {
@@ -43,14 +57,19 @@ class Search extends React.Component {
     render() {
         return (
             <View style={styles.main_container}>
-                <TextInput onSubmitEditing={() => this.loadFilm()}
+                <TextInput onSubmitEditing={() => this.searchFilms()}
                            onChangeText={(text) => this.searchTextInputChange(text)} style={styles.textinput}
                            placeholder="Titre du film"/>
                 <Button style={{height: 2}} title="Rechercher" onPress={() => {
-                    this.loadFilm()
+                    this.searchFilms()
                 }}/>
                 <FlatList style={{marginLeft: 5, marginRight: 5}}
                           data={this.state.films}
+                          onEndReachThreashold={0.5}
+                          onEndReached={() => {
+                              if(this.page < this.totalPages){
+                                this.loadFilm()
+                          }}}
                           keyExtractor={(item) => item.id}
                           renderItem={({item}) => <FilmItem film={item}/>}
                 />
