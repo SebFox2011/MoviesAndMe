@@ -54,6 +54,10 @@ class Search extends React.Component {
         this.searchText = text
     }
 
+    displayDetailForFilm = (idFilm) => {
+        this.props.navigation.navigate("Detail",{idFilm:idFilm})
+    }
+
     render() {
         return (
             <View style={styles.main_container}>
@@ -71,7 +75,7 @@ class Search extends React.Component {
                                 this.loadFilm()
                           }}}
                           keyExtractor={(item) => item.id}
-                          renderItem={({item}) => <FilmItem film={item}/>}
+                          renderItem={({item}) => <FilmItem film={item} displayDetailForFilm={this.displayDetailForFilm}/>}
                 />
                 {this.displayLoading()}
             </View>
@@ -80,8 +84,17 @@ class Search extends React.Component {
 }
 
 const styles = StyleSheet.create({
-    main_container: {marginTop: 20, flex: 1},
-    textinput: {marginLeft: 5, marginRight: 5, height: 50, borderColor: '#000000', borderWidth: 2, paddingLeft: 5},
+    main_container: {
+        flex: 1
+    },
+    textinput: {
+        marginLeft: 5,
+        marginRight: 5,
+        height: 50,
+        borderColor: '#000000',
+        borderWidth: 2,
+        paddingLeft: 5
+    },
     loading_container: {
         position: 'absolute',
         left: 0,
