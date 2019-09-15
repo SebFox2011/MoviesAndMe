@@ -1,8 +1,11 @@
 import React from 'react'
 import {StyleSheet, View, Text, ActivityIndicator, ScrollView, Image, TouchableOpacity} from 'react-native'
 import {getFilmDetailFromApi, getImageFromApi} from '../api/TMDBapi'
+import moment from 'moment'
+import numeral from 'numeral'
+import {connect} from "react-redux";
 
-class FIlmDetail extends React.Component{
+class FilmDetail extends React.Component{
     constructor(props) {
         super(props)
         this.state = {
@@ -11,15 +14,52 @@ class FIlmDetail extends React.Component{
         }
     }
 
+    toggleFavorite(){
+        const action = {type: "TOGGLE_FAVORITE", value: this.state.film}
+        this.props.dispatch(action)
+    }
+
+    componentDidUpdate() {
+        console.log('Component did update')
+        console.log(this.props.favoriteFilms)
+    }
+
+    displayFavoriteImage(){
+        var sourceImage = require('../images/ic_favorite_border.png')
+        if(this.props.favoritesFilm.findIndex(item => item.id === this.state.film.id) !== -1){
+            sourceImage = require('../images/ic_favorite.png')
+        }
+        return (
+            <Image
+                source={sourceImage}
+                style={styles.favorite_image}
+                />
+        )
+    }
+
     displayFilm(){
         const film = this.state.film
         if (film !== undefined) {
             return(
                 <ScrollView style = {styles.scrawlView_container}>
-
-
-
-
+                    <Image style={styles.image} source={{uri: getImageFromApi(film.backdrop_path)}}/>
+                    <Text style={styles.title_text}>{film.title}</Text>
+                    <TouchableOpacity
+                        style={styles.favoriteContainer}
+                        onPress={()=> this.toggleFavorite()}>
+                        {this.displayFavoriteImage()}
+                    </TouchableOpacity>
+                    <Text style={styles.description_text}>{film.overview}</Text>
+                    <Text style={styles.default_text}>Sorti le {moment(new Date(film.release_date)).format('DD/MM/YYYY')}</Text>
+                    <Text style={styles.default_text}>Note : {film.vote_average} / 10</Text>
+                    <Text style={styles.default_text}>Nombre de votes : {film.vote_count}</Text>
+                    <Text style={styles.default_text}>Budget : {numeral(film.budget).format('0,0[.]00 $')}</Text>
+                    <Text style={styles.default_text}>Genre(s) : {film.genres.map(function(genre){
+                        return genre.name;
+                    }).join(" / ")}</Text>
+                    <Text style={styles.default_text}>Companie(s) : {film.production_companies.map(function(company){
+                        return company.name;
+                    }).join(" / ")}</Text>
                 </ScrollView>
             )}
     }
@@ -67,6 +107,9 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center'
     },
+    favoriteContainer:{
+      alignItems: 'center'
+    },
     scrawlView_container: {
         flex:1
     },
@@ -74,10 +117,19 @@ const styles = StyleSheet.create({
         height: 200,
         margin: 5,
         backgroundColor: 'gray'
+    },
+    favorite_image:{
+        width:40,
+        height: 40
     }
 })
 
-export default FIlmDetail
+const mapStateToProps = (state) => {
+    return {
+        favoritesFilm:state.favoritesFilm
+    }
+}
+export default connect(mapStateToProps) (FilmDetail)
 /*
 
 export default class App extends React.Component {
